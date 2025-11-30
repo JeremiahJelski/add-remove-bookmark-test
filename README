@@ -1,0 +1,5 @@
+Bookmark pagae to add bookmarks for wesites.
+The bookmark contains a name and url. 
+Validation for URL entered.
+Bookmarks are stored locally on browser.
+There is option to remove bookmark (remove from storage).
