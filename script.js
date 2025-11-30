@@ -7,7 +7,7 @@ const modal = document.getElementById('modal');
 const bookmarkContainer = document.getElementById('bookmark-container');
 const bookmarkForm = document.getElementById('bookmark-form');
 const deleteTile= document.getElementById('delete-icon');
-let bookmarks = [];
+let bookmarks = {};
 
 
 // Add a bookmark
@@ -26,14 +26,12 @@ function closeModal() {
 
 // Delete a bookmark
 function deleteBookmark(url) {
-    bookmarks.forEach((bookmark, i) => {
-        if (bookmark.url === url) {
-            bookmarks.splice(i, 1);
-        }
-    });
-    // Update bookmarks array in localStorage, re-populate DOM
-    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-    fetchBookmarks();
+    if (bookmarks[url]) {
+        delete bookmarks[url];
+        // Update bookmarks array in localStorage, re-populate DOM
+        localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+        fetchBookmarks();
+    }
 }
 
 // Validate form
@@ -57,7 +55,7 @@ function buildBookmarks() {
     // Empty container before looping to add all bookmarks to avoid doubles
     bookmarkContainer.textContent = '';
 
-    bookmarks.forEach((bm) => {
+    Object.values(bookmarks).forEach((bm) => {
         const {name, url} = bm;
 
         // Create item container
@@ -92,7 +90,7 @@ function fetchBookmarks() {
     if (localStorage.getItem('bookmarks')) {
         bookmarks = JSON.parse(localStorage.getItem('bookmarks'));
     } else {
-        bookmarks = [{name: 'Test', url: 'https://test.com'}];
+        bookmarks = {'https://test.com': {name: 'Test', url: 'https://test.com'}};
         localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
     }
     buildBookmarks();
@@ -113,9 +111,13 @@ function saveBookmark(e) {
         name: websiteNameValue,
         url: websiteUrlValue
     };
-    bookmarks.push(bookmark);
+
+    // Add bookmark object
+    bookmarks[websiteUrlValue] = bookmark;
+
     localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
     fetchBookmarks();
+    console.log(bookmarks);
     closeModal();
 }
 
